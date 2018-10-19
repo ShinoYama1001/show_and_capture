@@ -44,11 +44,11 @@ while(cap.isOpened()):
         if wait==0:
             key = cv2.waitKey(1)
 
-            if key == 63235:
+            if key == 3:
                 wait = 5
                 print("right")
                 cv2.imshow("image", img)
-            elif key == 63234:
+            elif key == 2:
                 wait = 5
                 print("left")
                 cv2.imshow("image", img2)
