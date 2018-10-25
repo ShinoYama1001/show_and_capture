@@ -5,3 +5,8 @@ class clacla:
 
     def pripri(self):
         print(self.name, self.age)
+
+
+class ovov:
+    def overover(self):
+        print("before over")

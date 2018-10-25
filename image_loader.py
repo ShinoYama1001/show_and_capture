@@ -11,6 +11,7 @@ class image_loader:
             #print(dir_name)
             #print(dir_names)
             self.iamge_path_list = []
+            self.image_name_list = []
             self.image_list = []
 
             #run in init
@@ -26,8 +27,9 @@ class image_loader:
             for item in files_file:
                 if ".jpg" in item or ".png" in item:
                     self.iamge_path_list.append(path+'/'+item)
+                    self.image_name_list.append(item)
                     #print(item)
-            print(self.iamge_path_list)
+            #print(self.iamge_path_list)
 
     def load_image(self):
         for item in self.iamge_path_list:
@@ -41,6 +43,9 @@ class image_loader:
 
 if __name__=="__main__":
     il = image_loader("testlist.txt")
+
+    print(il.iamge_path_list)
+    print(il.image_name_list)
 
     for image in il.image_list:
         cv2.imshow("image", image)
