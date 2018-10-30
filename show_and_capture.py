@@ -1,63 +1,76 @@
-"""
-memo
-
-
-keyWait
--> : 63235
-<- : 63234
-q  : ord('q')
-
-
-"""
-import numpy as np
+import image_loader as i_l
+import video_capture as v_c
 import cv2
+import numpy as np
+from timeit import default_timer as timer
 
-cap = cv2.VideoCapture(0)
-cap.set(3,640)
-cap.set(4,480)
-# Define the codec and create VideoWriter object
-fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-out = cv2.VideoWriter('output.mp4',fourcc, 20.0, (640,480))
 
-img = cv2.imread("cloud.png")
-img2 = cv2.imread("image.png")
+class Video_Capture(v_c.video_capture):
 
-cv2.imshow("image", img)
+    def __init__(self, fps):
+        super().__init__()
+        self.out = cv2.VideoWriter('output.mp4', self.fourcc,   fps, (self.re_w,self.re_h), True)
+        self.log = open("log.csv", 'w')
 
-wait = 0
-count = 0
-
-while(cap.isOpened()):
-    ret, frame = cap.read()
     
+    def draw_to_image(self, frame, image_name):
+        super().draw_to_image(frame)
+        cv2.rectangle(frame, (450,0), (550,17), (0,0,0), -1)
+        cv2.putText(frame, image_name, (455,10),
+        cv2.FONT_HERSHEY_SIMPLEX, 0.35, (255,255,255), 1)
 
-    if ret==True:
-        # write the frame
-        #cv2.imwrite("frames/"+str(count)+".png", frame)
-        #count += 1
+    def output(self, frame, image_name):
+        #cv2.imshow("Result", frame)
+        self.out.write(frame)
+        self.log.write(str(self.frame_count)+','+str(self.total_time)+','+image_name+'\n')
 
-        out.write(frame)
 
-        if wait>0:
-            wait = wait-1
+    def check_keyboard(self):
+        key = cv2.waitKey(1)
 
-        if wait==0:
-            key = cv2.waitKey(1)
+        if key == ord('q'):
+            return "break"
+        if key == 3:
+            return "right"
+        if key == 2:
+            return "left"
 
-            if key == 3:
-                wait = 5
-                print("right")
-                cv2.imshow("image", img)
-            elif key == 2:
-                wait = 5
-                print("left")
-                cv2.imshow("image", img2)
-            elif key == ord("q"):
-                break
-    else:
-        break
+    def capture_end(self):
+        super().capture_end()
+        self.log.close()
 
-# Release everything if job is finished
-cap.release()
-out.release()
-cv2.destroyAllWindows()
+
+
+
+if __name__ == "__main__":
+    VC = Video_Capture(20)
+    IL = i_l.image_loader("testlist.txt")
+
+    i=0
+    cv2.imshow("window", IL.image_list[i])
+
+    while True:
+        ret, frame = VC.cap.read()
+        if ret == False:
+            print("Finish")
+            break
+            
+        VC.calc_fps()
+        VC.draw_to_image(frame, IL.image_name_list[i])
+        VC.output(frame, IL.image_name_list[i])
+
+        key = VC.check_keyboard()
+        if key == "break":
+            break
+        if key == "right":
+            i += 1
+            i = i % len(IL.image_list)
+            cv2.imshow("window", IL.image_list[i])
+        if key == "left":
+            i -= 1
+            i = i % len(IL.image_list)
+            cv2.imshow("window", IL.image_list[i])
+
+        VC.frame_count += 1
+        
+    VC.capture_end()
