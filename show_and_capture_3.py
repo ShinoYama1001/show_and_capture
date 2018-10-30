@@ -43,7 +43,7 @@ class Video_Capture(v_c.video_capture):
 
 
 if __name__ == "__main__":
-    VC = Video_Capture(20)
+    VC = Video_Capture(30)
     IL = i_l.image_loader("testlist.txt")
 
     i=0
