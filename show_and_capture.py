@@ -15,6 +15,7 @@ class Video_Capture(v_c.video_capture):
     
     def draw_to_image(self, frame, image_name):
         super().draw_to_image(frame)
+        # draw image name
         cv2.rectangle(frame, (450,0), (550,17), (0,0,0), -1)
         cv2.putText(frame, image_name, (455,10),
         cv2.FONT_HERSHEY_SIMPLEX, 0.35, (255,255,255), 1)
@@ -47,6 +48,9 @@ if __name__ == "__main__":
     IL = i_l.image_loader("testlist.txt")
 
     i=0
+    cv2.namedWindow("window", cv2.WINDOW_GUI_NORMAL)
+    #cv2.moveWindow("window", 200,200)
+
     cv2.imshow("window", IL.image_list[i])
 
     while True:

@@ -84,7 +84,7 @@ class video_capture:
 
 
 def main():
-    #print("Opencv Version:", cv2.__version__)
+    print("Opencv Version:", cv2.__version__)
 
     SC = video_capture()
 
@@ -104,7 +104,7 @@ def main():
             break
 
         SC.frame_count += 1
-        print(SC.total_time)
+        #print(SC.total_time)
 
     SC.capture_end()
 

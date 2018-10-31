@@ -5,16 +5,14 @@ import cv2
 class image_loader:
 
     def __init__(self, path):
-        with open(path) as dir_list:
-            self.dir_name = dir_list.readline().strip()
-            self.dir_names = dir_list.readline().split()
-            #print(dir_name)
-            #print(dir_names)
+        with open(path) as textfile:
+            self.dir_name = textfile.readline().strip()
+            self.dir_names = textfile.readline().split()
+
             self.iamge_path_list = []
             self.image_name_list = []
             self.image_list = []
 
-            #run in init
             self.search_image()
             self.load_image()
 
