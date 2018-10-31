@@ -48,10 +48,11 @@ if __name__ == "__main__":
     IL = i_l.image_loader("testlist.txt")
 
     i=0
+    j=0
     cv2.namedWindow("window", cv2.WINDOW_GUI_NORMAL)
     #cv2.moveWindow("window", 200,200)
 
-    cv2.imshow("window", IL.image_list[i])
+    cv2.imshow("window", IL.image_list[i][j])
 
     while True:
         ret, frame = VC.cap.read()
@@ -60,20 +61,31 @@ if __name__ == "__main__":
             break
             
         VC.calc_fps()
-        VC.draw_to_image(frame, IL.image_name_list[i])
-        VC.output(frame, IL.image_name_list[i])
+        VC.draw_to_image(frame, IL.image_name_list[i][j])
+        VC.output(frame, IL.image_name_list[i][j])
 
         key = VC.check_keyboard()
+
         if key == "break":
             break
+
         if key == "right":
-            i += 1
-            i = i % len(IL.image_list)
-            cv2.imshow("window", IL.image_list[i])
+            j -= 1
+            if j<0:
+                i = (i-1) % len(IL.image_list)
+                j = len(IL.image_list[i]) - 1
+            cv2.imshow("window", IL.image_list[i][j])
+            
         if key == "left":
-            i -= 1
-            i = i % len(IL.image_list)
-            cv2.imshow("window", IL.image_list[i])
+            j += 1
+            if j>=len(IL.image_list[i]):
+                j = 0
+                i = (i-1) % len(IL.image_list)
+            print(i,j)
+            cv2.imshow("window", IL.image_list[i][j])
+            
+
+
 
         VC.frame_count += 1
         
