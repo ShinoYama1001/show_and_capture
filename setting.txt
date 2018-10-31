@@ -1,0 +1,4 @@
+Hikensya_A
+images_dir
+B 10
+A 5

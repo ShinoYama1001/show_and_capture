@@ -23,7 +23,7 @@ class video_capture:
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         self.out = cv2.VideoWriter('output.mp4', self.fourcc,   20.0, (self.re_w,self.re_h), True)
 
-        #aspect of video 
+        #aspect of video
         self.cap_w = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         self.cap_h = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
         #print(str(self.cap_w) + "  " + str(self.cap_h))
@@ -51,13 +51,13 @@ class video_capture:
             self.total_time += 1
             self.fps = "FPS." + str(self.curr_fps)
             self.curr_fps = 0
-        
+
     def draw_to_image(self, frame):
         # draw frame number
         cv2.rectangle(frame, (0,0), (200,17), (0,0,0), -1)
         cv2.putText(frame, str(self.frame_count), (0,10),
         cv2.FONT_HERSHEY_SIMPLEX, 0.35, (255,255,255), 1)
-        # draw fps 
+        # draw fps
         cv2.rectangle(frame, (250,0), (300,17), (0,0,0), -1)
         cv2.putText(frame, self.fps, (255,10),
         cv2.FONT_HERSHEY_SIMPLEX, 0.35, (255,255,255), 1)
@@ -93,7 +93,7 @@ def main():
         if ret == False:
             print("Finish")
             break
-            
+
         SC.calc_fps()
 
         SC.draw_to_image(frame)

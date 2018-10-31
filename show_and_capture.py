@@ -12,7 +12,7 @@ class Video_Capture(v_c.video_capture):
         self.out = cv2.VideoWriter('output.mp4', self.fourcc,   fps, (self.re_w,self.re_h), True)
         self.log = open("log.csv", 'w')
 
-    
+
     def draw_to_image(self, frame, image_name):
         super().draw_to_image(frame)
         # draw image name
@@ -40,12 +40,29 @@ class Video_Capture(v_c.video_capture):
         super().capture_end()
         self.log.close()
 
+class Image_Loader(i_l.image_loader):
+    def __init__(self, text_path):
+        with open(text_path) as setting:
+            self.user_name = setting.readline().strip()
+            self.dir_name = setting.readline().strip()
+            self.dir_info = [i.split() for i in setting.readlines()]
+            self.dir_names = [i[0] for i in self.dir_info]
+
+            self.iamge_path_list = []
+            self.image_name_list = []
+            self.image_list = []
+
+            self.search_image()
+            self.load_image()
+
 
 
 
 if __name__ == "__main__":
     VC = Video_Capture(20)
-    IL = i_l.image_loader("testlist.txt")
+    IL = Image_Loader("setting.txt")
+
+    VC.log.write(IL.user_name + '\n')
 
     i=0
     j=0
@@ -59,7 +76,7 @@ if __name__ == "__main__":
         if ret == False:
             print("Finish")
             break
-            
+
         VC.calc_fps()
         VC.draw_to_image(frame, IL.image_name_list[i][j])
         VC.output(frame, IL.image_name_list[i][j])
@@ -75,18 +92,15 @@ if __name__ == "__main__":
                 i = (i-1) % len(IL.image_list)
                 j = len(IL.image_list[i]) - 1
             cv2.imshow("window", IL.image_list[i][j])
-            
+
         if key == "left":
             j += 1
             if j>=len(IL.image_list[i]):
                 j = 0
                 i = (i-1) % len(IL.image_list)
-            print(i,j)
             cv2.imshow("window", IL.image_list[i][j])
-            
-
 
 
         VC.frame_count += 1
-        
+
     VC.capture_end()

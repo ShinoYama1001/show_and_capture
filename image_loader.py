@@ -42,7 +42,7 @@ class image_loader:
 
 
 if __name__=="__main__":
-    il = image_loader("testlist.txt")
+    il = image_loader("setting.txt")
 
     print(il.iamge_path_list)
     print(il.image_name_list)
