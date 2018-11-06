@@ -1,7 +1,13 @@
+"""
+なんか変更するたびに関数とか変えるの面倒なのでモジュールとか関数とか後から考えよう
+本当は変更込みで作っとくべきなんだろうけどめんどくさい
+"""
+
 import image_loader as i_l
 import video_capture as v_c
 import cv2
 import numpy as np
+import os
 from timeit import default_timer as timer
 
 
@@ -45,8 +51,7 @@ class Image_Loader(i_l.image_loader):
         with open(text_path) as setting:
             self.user_name = setting.readline().strip()
             self.dir_name = setting.readline().strip()
-            self.dir_info = [i.split() for i in setting.readlines()]
-            self.dir_names = [i[0] for i in self.dir_info]
+            self.dir_names = setting.readline().split()
 
             self.iamge_path_list = []
             self.image_name_list = []
@@ -111,16 +116,22 @@ def main1():
 
 def main2():
     fps = 20
+    #諸々の読み込み
     IL = Image_Loader("setting.txt")
-    log_name = IL.user_name+"_log.csv"
+    #ディレクトリ作る
+    try:
+        os.mkdir(IL.user_name)
+    except FileExistsError:
+        pass
+    #記録用諸々
+    log_name = IL.user_name+'/'+IL.user_name+"_log.csv"
     VC = Video_Capture(fps, log_name)
     win_name = "window"
-
-    VC.log.write(IL.user_name + '\n')
-
+    #ディレクトリ参照用変数
     i,j = 0,0
+
     #*動画をディレクトリ毎に分けたいがための上書き
-    VC.out = cv2.VideoWriter(IL.user_name+'_'+IL.dir_names[i]+".mp4", VC.fourcc, fps, (VC.re_w,VC.re_h), True)
+    VC.out = cv2.VideoWriter(IL.user_name+'/'+IL.user_name+'_'+IL.dir_names[i]+".mp4", VC.fourcc, fps, (VC.re_w,VC.re_h), True)
     cv2.namedWindow(win_name, cv2.WINDOW_NORMAL)
     cv2.imshow(win_name, IL.image_list[i][j])
 
@@ -148,11 +159,16 @@ def main2():
             j += 1
             #*ディレクトリの遷移
             if j >= len(IL.image_list[i]):
-                j = 0
-                i = (i+1) % len(IL.image_list)
+                #次があればそれへ
+                if i < len(IL.dir_names)-1:
+                    i += 1
+                    j = 0
+                #なければ終了
+                else:
+                    break
                 #*ファイル分け用の処理
                 VC.out.release()
-                VC.out = cv2.VideoWriter(IL.user_name+'_'+IL.dir_names[i]+".mp4", VC.fourcc, fps, (VC.re_w,VC.re_h), True)
+                VC.out = cv2.VideoWriter(IL.user_name+'/'+IL.user_name+'_'+IL.dir_names[i]+".mp4", VC.fourcc, fps, (VC.re_w,VC.re_h), True)
                 VC.log.close()
                 VC.log = open(log_name, 'a')
 
