@@ -37,10 +37,19 @@ class Video_Capture(v_c.video_capture):
 
         if key == ord('q'):
             return "break"
-        if key == 3:
-            return "right"
-        if key == 2:
+        elif key == 0:
+            return "up"
+        elif key == 1:
+            return "down"
+        elif key == 2:
             return "left"
+        elif key == 3:
+            return "right"
+        elif key == 32:
+            return "space"
+        elif key == -1:
+            return "none"
+
 
     def capture_end(self):
         super().capture_end()
@@ -62,10 +71,87 @@ class Image_Loader(i_l.image_loader):
 
 
 
+class Show_And_Capture():
+
+    def __init__(self):
+        #todo ウィンドウフルサイズは下のが邪魔なのでサイズ調整する
+        self.dw = 1440
+        self.dh = 900
+        self.fps = 20
+        self.IL = Image_Loader("setting.txt")
+        try:
+            os.mkdir(self.IL.user_name)
+        except FileExistsError:
+            pass
+        self.log_name = self.IL.user_name+'/'+self.IL.user_name+"_log.csv"
+        self.VC = Video_Capture(self.fps, self.log_name)
+        self.win_name = "window"
+        self.i,self.j = 0,0
+
+        self.VC.out = cv2.VideoWriter(self.IL.user_name+'/'+self.IL.user_name+'_'+self.IL.dir_names[self.i]+".mp4", self.VC.fourcc, self.fps, (self.VC.re_w, self.VC.re_h), True)
+        cv2.namedWindow(self.win_name, cv2.WINDOW_FULLSCREEN)
+        self.show_fitted_image(self.IL.image_list[self.i][self.j])
+
+    def show_fitted_image(self, image):
+        iw = image.shape[1]
+        ih = image.shape[0]
+
+        as_w = self.dw / iw
+        as_h = self.dh / ih
+
+        if as_w < as_h:
+            resized_image = cv2.resize(image, (int(iw*as_w), int(ih*as_w)))
+        else:
+            resized_image = cv2.resize(image, (int(iw*as_h), int(ih*as_h)))
+        cv2.imshow(self.win_name, resized_image)
+        #todo ここにウィンドウの位置の調整を入れる
+
+    def key_control(self, key):
+        if key == "break":
+            return "break"
+
+        elif key == "right":
+            self.j -= 1
+            if self.j<0:
+                self.j=0
+            self.show_fitted_image(self.IL.image_list[self.i][self.j])
+
+        elif key == "left":
+            self.j += 1
+            if self.j >= len(self.IL.image_list[self.i]):
+                if self.i < len(self.IL.dir_names)-1:
+                    self.i += 1
+                    self.j = 0
+                    self.VC.out.release()
+                    self.VC.out = cv2.VideoWriter(self.IL.user_name+'/'+self.IL.user_name+'_'+self.IL.dir_names[self.i]+".mp4", self.VC.fourcc, self.fps, (self.VC.re_w, self.VC.re_h), True)
+                    self.VC.log.close()
+                    self.VC.log = open(self.log_name, 'a')
+                else:
+                    return "break"
+            self.show_fitted_image(self.IL.image_list[self.i][self.j])
 
 
+    def main_loop(self):
+        while True:
+            ret, frame = self.VC.cap.read()
+            if ret == False:
+                print("False in cap.read")
+                break
 
-def main1():
+            self.VC.calc_fps()
+            self.VC.draw_to_image(frame, self.IL.image_name_list[self.i][self.j])
+            self.VC.output(frame, self.IL.image_name_list[self.i][self.j])
+
+            key = self.VC.check_keyboard()
+            if key != "none":
+                if self.key_control(key) == "break":
+                    break
+
+            self.VC.frame_count += 1
+        self.VC.capture_end()
+
+
+def main_ver1():
     IL = Image_Loader("setting.txt")
     log_name = IL.user_name+"_log.csv"
     VC = Video_Capture(20, log_name)
@@ -114,7 +200,11 @@ def main1():
 
     VC.capture_end()
 
-def main2():
+def main_ver2():
+    #ディスプレイの解像度
+    dw = 1440
+    dh = 900
+    #再生fpsの設定
     fps = 20
     #諸々の読み込み
     IL = Image_Loader("setting.txt")
@@ -132,7 +222,7 @@ def main2():
 
     #*動画をディレクトリ毎に分けたいがための上書き
     VC.out = cv2.VideoWriter(IL.user_name+'/'+IL.user_name+'_'+IL.dir_names[i]+".mp4", VC.fourcc, fps, (VC.re_w,VC.re_h), True)
-    cv2.namedWindow(win_name, cv2.WINDOW_NORMAL)
+    cv2.namedWindow(win_name, cv2.WINDOW_FULLSCREEN)
     cv2.imshow(win_name, IL.image_list[i][j])
 
     while True:
@@ -182,4 +272,5 @@ def main2():
 
 
 if __name__ == "__main__":
-    main2()
+    SAC = Show_And_Capture()
+    SAC.main_loop()
