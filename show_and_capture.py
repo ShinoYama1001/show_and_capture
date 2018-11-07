@@ -75,7 +75,7 @@ class Image_Loader(i_l.image_loader):
 class Show_And_Capture():
 
     def __init__(self):
-        # ウィンドウの解像度
+        # パソコンの画面の解像度
         self.dw = 1440
         self.dh = 900 - 50 #上の枠ぶんはみ出ることに気づいた
         self.fps = 20
