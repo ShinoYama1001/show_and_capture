@@ -7,6 +7,7 @@ import image_loader as i_l
 import video_capture as v_c
 import cv2
 import numpy as np
+import sys
 import os
 from timeit import default_timer as timer
 
@@ -74,12 +75,12 @@ class Image_Loader(i_l.image_loader):
 
 class Show_And_Capture():
 
-    def __init__(self):
+    def __init__(self, text_path):
         # パソコンの画面の解像度
         self.dw = 1440
         self.dh = 900 - 50 #上の枠ぶんはみ出ることに気づいた
-        self.fps = 20
-        self.IL = Image_Loader("setting.txt")
+        self.fps = 30
+        self.IL = Image_Loader(text_path)
         # データ格納用フォルダがなければ作る
         try:
             os.mkdir(self.IL.user_name)
@@ -191,5 +192,6 @@ class Show_And_Capture():
 
 # メイン関数
 if __name__ == "__main__":
-    SAC = Show_And_Capture()
+    args = sys.argv
+    SAC = Show_And_Capture(args[1])
     SAC.main_loop()
