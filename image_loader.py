@@ -6,6 +6,7 @@ class image_loader:
 
     def __init__(self, path):
         with open(path) as textfile:
+            self.user_name = textfile.readline().strip()
             self.dir_name = textfile.readline().strip()
             self.dir_names = textfile.readline().split()
 
@@ -23,8 +24,8 @@ class image_loader:
             path = self.dir_name+'/'+d_name
             files = os.listdir(path)
             files_file = [f for f in files if os.path.isfile(os.path.join(path, f))]
-            files_file.sort()
             image_list_in_dir = [s for s in files_file if ".jpg" in s or ".png" in s or ".JPG" in s or ".PNG" in s or ".jpeg" in s]
+            image_list_in_dir.sort(key=lambda x: int(x.split('_')[1].split('.')[0]))
 
             self.iamge_path_list.append([path+'/'+s for s in image_list_in_dir])
             self.image_name_list.append(image_list_in_dir)
