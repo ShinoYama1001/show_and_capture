@@ -119,6 +119,23 @@ class Show_And_Capture():
         # 合わせた大きさで表示し、中央へ移動する
         cv2.imshow(self.win_name, resized_image)
         cv2.moveWindow(self.win_name, int((self.dw - resized_w)/2), int((self.dh - resized_h)/2))
+        self.show_numbers()
+
+
+    def show_numbers(self):
+        img = cv2.imread(self.IL.dir_name+"/white.png")
+
+        txt1 = "num of Manga: " + str(self.i) + "/" + str(len(self.IL.dir_names)-1)
+        txt2 = "num of Pages: " + str(self.j) + "/" + str(len(self.IL.image_list[self.i])-1)
+
+        cv2.putText(img, txt1, (5,30),
+        cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0,0,0), 1)
+
+        cv2.putText(img, txt2, (5,70),
+        cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0,0,0), 1)
+
+        cv2.imshow("pages", img)
+        cv2.moveWindow("pages", self.dw-180, self.dh-140)
 
     # キー入力による処理の分岐
     def key_control(self, key):
