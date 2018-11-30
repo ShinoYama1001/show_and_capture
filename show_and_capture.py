@@ -48,6 +48,8 @@ class Video_Capture(v_c.video_capture):
             return "right"
         elif key == 32:
             return "space"
+        elif key == 13:
+            return "enter"
         elif key == -1:
             return "none"
 
@@ -135,7 +137,7 @@ class Show_And_Capture():
         cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0,0,0), 1)
 
         cv2.imshow("pages", img)
-        cv2.moveWindow("pages", self.dw-180, self.dh-140)
+        cv2.moveWindow("pages", self.dw-180, self.dh-400)
 
     # キー入力による処理の分岐
     def key_control(self, key):
@@ -153,15 +155,7 @@ class Show_And_Capture():
         elif key == "left":
             self.j += 1
             if self.j >= len(self.IL.image_list[self.i]):
-                if self.i < len(self.IL.dir_names)-1:
-                    self.i += 1
-                    self.j = 0
-                    self.VC.out.release()
-                    self.VC.out = cv2.VideoWriter(self.IL.user_name+'/'+self.IL.user_name+'_'+self.IL.dir_names[self.i]+".mp4", self.VC.fourcc, self.fps, (self.VC.re_w, self.VC.re_h), True)
-                    self.VC.log.close()
-                    self.VC.log = open(self.log_name, 'a')
-                else:
-                    return "break"
+                self.j -= 1
             self.show_fitted_image(self.IL.image_list[self.i][self.j])
 
         # 上で上側を拡大表示
@@ -180,6 +174,19 @@ class Show_And_Capture():
 
         # スペースで元の大きさに戻す
         elif key == "space":
+            self.show_fitted_image(self.IL.image_list[self.i][self.j])
+
+        elif key == "enter":
+            if self.j == len(self.IL.image_list[self.i]) - 1:
+                if self.i < len(self.IL.dir_names)-1:
+                    self.i += 1
+                    self.j = 0
+                    self.VC.out.release()
+                    self.VC.out = cv2.VideoWriter(self.IL.user_name+'/'+self.IL.user_name+'_'+self.IL.dir_names[self.i]+".mp4", self.VC.fourcc, self.fps, (self.VC.re_w, self.VC.re_h), True)
+                    self.VC.log.close()
+                    self.VC.log = open(self.log_name, 'a')
+                else:
+                    return "break"
             self.show_fitted_image(self.IL.image_list[self.i][self.j])
 
     # メインの処理
